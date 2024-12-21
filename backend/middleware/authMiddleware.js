@@ -18,4 +18,19 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+function roleMiddleware(allowedRoles) {
+  return (req, res, next) => {
+    const userRole = req.user.role; // Получаем роль пользователя из JWT
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    next();
+  };
+}
+
+module.exports = {
+  authMiddleware,
+  roleMiddleware,
+};

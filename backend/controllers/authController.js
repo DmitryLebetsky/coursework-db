@@ -8,6 +8,12 @@ const authController = {
         const { username, password, role } = req.body;
 
         try {
+            
+            // Проверка, что действие выполняет администратор
+            if (!req.user || req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Access denied: Only admins can create accounts' });
+            }
+
             // Проверка уникальности имени пользователя
             const existingUser = await User.findByUsername(username);
             if (existingUser) {
