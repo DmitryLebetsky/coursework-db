@@ -15,6 +15,17 @@ const User = {
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     return result.rows[0];
   },
+
+  async getByRole(role) {
+    const result = await pool.query('SELECT id, username, role FROM users WHERE role = $1', [role]);
+    return result.rows;
+  },
+
+  async delete(id) {
+    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0];
+  }
+
 };
 
 module.exports = User;

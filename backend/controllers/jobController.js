@@ -7,7 +7,7 @@ const jobController = {
     const recruiterId = req.user.userId;
   
     try {
-      const job = await Job.create(title, description, jobTypeId, recruiterId);
+      const job = await Job.create(title, description, jobTypeId);
   
       // Пытаемся записать действие в лог
       try {

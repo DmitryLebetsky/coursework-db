@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const stageController = require('../controllers/stageController');
-const authMiddleware = require('../middleware/authMiddleware');
+const {authMiddleware} = require('../middleware/authMiddleware');
 
 router.post('/', authMiddleware, stageController.create);
 router.put('/:id', authMiddleware, stageController.update);

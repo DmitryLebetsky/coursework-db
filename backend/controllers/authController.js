@@ -8,7 +8,7 @@ const authController = {
         const { username, password, role } = req.body;
 
         try {
-            
+
             // Проверка, что действие выполняет администратор
             if (!req.user || req.user.role !== 'admin') {
                 return res.status(403).json({ message: 'Access denied: Only admins can create accounts' });
@@ -58,6 +58,34 @@ const authController = {
         // Удаляем токен на клиенте, либо на сервере добавляем логику,
         // например, логировать выход пользователя, если нужно
         res.status(200).json({ message: 'Logout successful' });
+    },
+    
+    async getRecruiters(req, res) {
+        try {
+            // Получаем всех пользователей с ролью 'recruiter'
+            const recruiters = await User.getByRole('recruiter');
+            res.json(recruiters);
+        } catch (error) {
+            console.error('Error retrieving recruiters:', error);
+            res.status(500).json({ message: 'Error retrieving recruiters', error });
+        }
+    },
+
+    async deleteUser(req, res) {
+        const { id } = req.params;
+    
+        try {
+            // Удаляем пользователя по ID
+            const deletedUser = await User.delete(id);
+            if (deletedUser) {
+                res.json({ message: 'User deleted successfully', deletedUser });
+            } else {
+                res.status(404).json({ message: 'User not found' });
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            res.status(500).json({ message: 'Error deleting user', error });
+        }
     }
 };
 
