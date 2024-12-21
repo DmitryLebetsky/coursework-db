@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function Jobs() {
@@ -110,6 +111,8 @@ function Jobs() {
                     <li key={job.id}>
                         <h3>{job.title}</h3>
                         <p>{job.description}</p>
+                        <p>Type: {job.job_type_name || 'Not specified'}</p>
+                        <Link to={`/candidates/${job.id}`}>View Candidates</Link>
                         <button onClick={() => handleDeleteJob(job.id)}>Delete</button>
                     </li>
                 ))}
