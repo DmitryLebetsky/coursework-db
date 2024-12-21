@@ -54,6 +54,16 @@ const Analytics = {
     );
     return result.rows;
   },
+
+  async getAverageClosingTime() {
+    const result = await pool.query(
+      `SELECT AVG(EXTRACT(EPOCH FROM (j.closed_at - j.created_at))) AS avg_closing_time
+       FROM jobs j
+       WHERE j.status = 'closed'`
+    );
+    return result.rows[0];
+  }
+  
 };
 
 module.exports = Analytics;

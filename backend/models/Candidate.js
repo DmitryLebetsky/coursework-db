@@ -9,6 +9,11 @@ const Candidate = {
     return result.rows[0];
   },
 
+  async getAll() {
+    const result = await pool.query('SELECT * FROM candidates');
+    return result.rows;
+  },
+
   async getAllByVacancy(vacancyId) {
     const result = await pool.query(
       'SELECT * FROM candidates WHERE vacancy_id = $1',

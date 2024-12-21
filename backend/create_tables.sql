@@ -42,6 +42,29 @@ CREATE TABLE candidate_stage (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE action_log (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    action VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE candidate_comment (
+    id SERIAL PRIMARY KEY,
+    candidate_id INTEGER REFERENCES candidates(id),
+    recruiter_id INTEGER REFERENCES users(id),
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE report (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    job_id INTEGER REFERENCES jobs(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content TEXT NOT NULL
+);
+
 SELECT * FROM candidates;
 SELECT * FROM candidate_stage;
 

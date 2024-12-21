@@ -1,17 +1,27 @@
 const Job = require('../models/Job');
+const ActionLog = require('../models/ActionLog'); 
 
 const jobController = {
   async create(req, res) {
     const { title, description, jobTypeId } = req.body;
-    const recruiterId = req.user.userId; // ID пользователя из токена
-
+    const recruiterId = req.user.userId;
+  
     try {
       const job = await Job.create(title, description, jobTypeId, recruiterId);
+  
+      // Пытаемся записать действие в лог
+      try {
+        await ActionLog.logAction(recruiterId, `Created job: ${job.title}`);
+      } catch (logError) {
+        console.error('Error logging action:', logError); // Логируем, но не прерываем процесс
+      }
+  
       res.status(201).json({ message: 'Job created successfully', job });
     } catch (error) {
+      console.error('Error creating job:', error); // Логируем ошибку
       res.status(500).json({ message: 'Error creating job', error });
     }
-  },
+  },  
 
   async getAll(req, res) {
     try {
@@ -36,13 +46,33 @@ const jobController = {
     }
   },
 
+  async update(req, res) {
+    const { id } = req.params;
+    const { title, description } = req.body;
+
+    try {
+      const updatedJob = await Job.update(id, title, description);
+      if (updatedJob) {
+        res.json({ message: 'Job updated successfully', updatedJob });
+      } else {
+        res.status(404).json({ message: 'Job not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating job', error });
+    }
+  },
+
   async updateStatus(req, res) {
     const { id } = req.params;
     const { status } = req.body;
 
     try {
       const job = await Job.updateStatus(id, status);
-      res.json({ message: 'Job status updated successfully', job });
+      if (job) {
+        res.json({ message: 'Job status updated successfully', job });
+      } else {
+        res.status(404).json({ message: 'Job not found' });
+      }
     } catch (error) {
       res.status(500).json({ message: 'Error updating job status', error });
     }

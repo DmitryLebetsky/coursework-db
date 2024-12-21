@@ -33,6 +33,16 @@ const analyticsController = {
       res.status(500).json({ message: 'Error retrieving conversion rates', error });
     }
   },
+
+  async getAverageClosingTime(req, res) {
+    try {
+      const avgClosingTime = await Analytics.getAverageClosingTime();
+      res.json({ avgClosingTime });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving average closing time', error });
+    }
+  }
+
 };
 
 module.exports = analyticsController;

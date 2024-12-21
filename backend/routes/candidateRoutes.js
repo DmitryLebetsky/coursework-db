@@ -4,6 +4,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/', authMiddleware, candidateController.create); // Добавление кандидата
+router.get('/', authMiddleware, candidateController.getAll); // Получение всех кандидатов
 router.get('/:vacancyId', authMiddleware, candidateController.getAllByVacancy); // Получение всех кандидатов по вакансии
 router.delete('/:candidateId/stages', authMiddleware, candidateController.removeFromStage); // Удаление из этапов
 router.delete('/:candidateId', authMiddleware, candidateController.delete); // Полное удаление

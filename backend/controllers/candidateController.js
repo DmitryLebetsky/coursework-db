@@ -12,6 +12,16 @@ const candidateController = {
     }
   },
 
+  async getAll(req, res) {
+    try {
+      const candidates = await Candidate.getAll();
+      res.json(candidates);
+    } catch (error) {
+      console.error('Error retrieving candidates:', error);
+      res.status(500).json({ message: 'Error retrieving candidates', error });
+    }
+  },  
+  
   async getAllByVacancy(req, res) {
     const { vacancyId } = req.params;
 
@@ -42,11 +52,11 @@ const candidateController = {
   // Полное удаление кандидата из вакансии
   async delete(req, res) {
     console.log('Candidate ID from params:', req.params.candidateId);
-  
+
     try {
       const deletedCandidate = await Candidate.delete(req.params.candidateId);
       console.log('Deleted candidate:', deletedCandidate);
-  
+
       if (deletedCandidate) {
         res.json({ message: 'Candidate deleted successfully', deletedCandidate });
       } else {
