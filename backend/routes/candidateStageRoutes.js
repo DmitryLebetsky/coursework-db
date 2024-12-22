@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/update', authMiddleware, candidateStageController.update); // Перемещение кандидата по этапам
 router.get('/:candidateId', authMiddleware, candidateStageController.getStatus); // Получение текущего этапа кандидата
+router.get('/current', authMiddleware, candidateStageController.getCurrentStages);
 
 module.exports = router;

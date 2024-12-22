@@ -4,11 +4,25 @@ const candidateStageController = {
   async update(req, res) {
     const { candidateId, stageId } = req.body;
 
+    console.log('Received candidateId:', candidateId); // Логируем входные данные
+    console.log('Received stageId:', stageId);
+
     try {
-      const updatedStage = await CandidateStage.update(candidateId, stageId);
-      res.status(200).json({ message: 'Candidate stage updated successfully', updatedStage });
+      const updatedCandidateStage = await CandidateStage.update(candidateId, stageId);
+      console.log('Updated candidate stage:', updatedCandidateStage); // Логируем результат работы модели
+      res.status(200).json({ message: 'Candidate stage updated successfully', updatedCandidateStage });
     } catch (error) {
       res.status(500).json({ message: 'Error updating candidate stage', error });
+    }
+  },
+
+  async getCurrentStages(req, res) {
+    try {
+      const currentStages = await CandidateStage.getCurrentStages();
+      res.json(currentStages);
+    } catch (error) {
+      console.error('Error retrieving current stages:', error);
+      res.status(500).json({ message: 'Error retrieving current stages', error });
     }
   },
 

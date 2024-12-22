@@ -8,6 +8,7 @@ import Admin from './pages/Admin';
 import Jobs from './pages/Jobs';
 import JobTypes from './pages/JobTypes';
 import Candidates from './pages/Candidates';
+import Pipeline from './pages/Pipeline';
 
 import { isAuthenticated, isAdmin } from './utils/auth';
 
@@ -46,6 +47,10 @@ function App() {
         <Route
           path="/candidates/:jobId"
           element={isAuthenticated() ? <Candidates /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/pipeline/:jobId"
+          element={isAuthenticated() ? <Pipeline /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
