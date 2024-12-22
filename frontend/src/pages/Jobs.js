@@ -73,6 +73,31 @@ function Jobs() {
         }
     };
 
+    const handleCloseJob = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `/api/jobs/${id}/status`,
+                { status: 'closed' },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            // Обновляем список вакансий
+            setJobs((prevJobs) =>
+                prevJobs.map((job) =>
+                    job.id === id ? { ...job, status: response.data.job.status } : job
+                )
+            );
+
+            setMessage('Job closed successfully!');
+        } catch (error) {
+            console.error('Error closing job:', error);
+            setMessage('Error closing job.');
+        }
+    };
+
     return (
         <div>
             <h1>Jobs</h1>
@@ -112,8 +137,12 @@ function Jobs() {
                         <h3>{job.title}</h3>
                         <p>{job.description}</p>
                         <p>Type: {job.job_type_name || 'Not specified'}</p>
-                        <Link to={`/candidates/${job.id}`}>View Candidates</Link>
+                        <p>Status: {job.status}</p>
+                        <Link to={`/pipeline/${job.id}`}>View Pipeline</Link>
                         <button onClick={() => handleDeleteJob(job.id)}>Delete</button>
+                        {job.status !== 'closed' && (
+                            <button onClick={() => handleCloseJob(job.id)}>Close Job</button>
+                        )}
                     </li>
                 ))}
             </ul>

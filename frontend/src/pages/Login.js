@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext'; // Импортируем контекст
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth(); // Используем метод login из контекста
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -13,7 +15,10 @@ function Login() {
         username,
         password,
       });
-      localStorage.setItem('token', response.data.token);
+
+      // Сохраняем токен и роль через метод login
+      login(response.data.token, response.data.role);
+
       alert('Login successful!');
       window.location.href = '/'; // Перенаправляем на главную страницу
     } catch (err) {

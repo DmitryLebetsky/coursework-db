@@ -1,4 +1,4 @@
-import {jwtDecode} from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
@@ -7,18 +7,22 @@ export const isAuthenticated = () => {
   try {
     const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000; // Текущее время в секундах
-    return decoded.exp > currentTime; // Проверяем срок действия токена
+    if (decoded.exp <= currentTime) {
+      localStorage.removeItem('token'); // Удаляем токен, если истек срок
+      return false;
+    }
+    return true;
   } catch (error) {
     console.error('Invalid token:', error);
+    localStorage.removeItem('token'); // Удаляем некорректный токен
     return false;
   }
 };
 
-// Проверяем, является ли пользователь администратором
 export const isAdmin = () => {
-  const token = localStorage.getItem('token');
-  if (!token) return false;
+  if (!isAuthenticated()) return false;
 
+  const token = localStorage.getItem('token');
   try {
     const decoded = jwtDecode(token);
     return decoded.role === 'admin'; // Проверяем роль пользователя
