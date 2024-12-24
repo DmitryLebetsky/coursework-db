@@ -50,13 +50,36 @@ const stageController = {
     const { id } = req.params;
 
     try {
-      const deletedStage = await Stage.delete(id);
-      if (deletedStage) {
-        res.json({ message: 'Stage deleted successfully', deletedStage });
-      } else {
-        res.status(404).json({ message: 'Stage not found' });
+      // Получаем всех кандидатов с удаляемого этапа
+      const candidates = await CandidateStage.getByStage(id);
+
+      // Получаем вакансию для удаляемого этапа
+      const stageToDelete = await Stage.getById(id);
+
+      // Проверяем или создаём этап "No Stage"
+      let noStage = await Stage.getByJobAndName(stageToDelete.job_id, 'No Stage');
+      if (!noStage) {
+        noStage = await Stage.create('No Stage', stageToDelete.job_id);
       }
+
+      // Перемещаем кандидатов на этап "No Stage"
+      const updatedCandidates = [];
+      for (const candidate of candidates) {
+        const updatedCandidate = await CandidateStage.update(candidate.candidate_id, noStage.id);
+        updatedCandidates.push(updatedCandidate);
+      }
+
+      // Удаляем этап
+      const deletedStage = await Stage.delete(id);
+
+      res.json({
+        message: 'Stage deleted successfully',
+        deletedStage,
+        noStage,
+        updatedCandidates,
+      });
     } catch (error) {
+      console.error('Error deleting stage:', error);
       res.status(500).json({ message: 'Error deleting stage', error });
     }
   },

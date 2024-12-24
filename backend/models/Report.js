@@ -13,6 +13,14 @@ const Report = {
     const result = await pool.query('SELECT * FROM report ORDER BY created_at DESC');
     return result.rows;
   },
+
+  async getByUser(userId) {
+    const result = await pool.query(
+      'SELECT * FROM report WHERE user_id = $1 ORDER BY created_at DESC',
+      [userId]
+    );
+    return result.rows;
+  },
 };
 
 module.exports = Report;

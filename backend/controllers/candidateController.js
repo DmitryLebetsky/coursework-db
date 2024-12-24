@@ -1,13 +1,31 @@
 const Candidate = require('../models/Candidate');
+const CandidateStage = require('../models/CandidateStage');
+const Stage = require('../models/Stage');
 
 const candidateController = {
   async create(req, res) {
     const { name, email, resume, vacancyId } = req.body;
 
     try {
+      // Получаем этапы для вакансии
+      let stages = await Stage.getAllByJob(vacancyId);
+
+      let targetStage;
+      if (stages.length === 0) {
+        targetStage = await Stage.create('No Stage', vacancyId);
+      } else {
+        targetStage = stages[0];
+      }
+
+      // Создаём кандидата
       const candidate = await Candidate.create(name, email, resume, vacancyId);
-      res.status(201).json({ message: 'Candidate added successfully', candidate });
+
+      // Добавляем кандидата на целевой этап
+      const enrichedCandidate = await CandidateStage.update(candidate.id, targetStage.id);
+
+      res.status(201).json({ message: 'Candidate added successfully', candidate: enrichedCandidate });
     } catch (error) {
+      console.error('Error adding candidate:', error);
       res.status(500).json({ message: 'Error adding candidate', error });
     }
   },
@@ -20,8 +38,8 @@ const candidateController = {
       console.error('Error retrieving candidates:', error);
       res.status(500).json({ message: 'Error retrieving candidates', error });
     }
-  },  
-  
+  },
+
   async getAllByVacancy(req, res) {
     const { vacancyId } = req.params;
 
@@ -51,22 +69,26 @@ const candidateController = {
 
   // Полное удаление кандидата из вакансии
   async delete(req, res) {
-    console.log('Candidate ID from params:', req.params.candidateId);
+    const { candidateId } = req.params;
 
     try {
-      const deletedCandidate = await Candidate.delete(req.params.candidateId);
-      console.log('Deleted candidate:', deletedCandidate);
+      // Удаляем связь кандидата с этапами
+      await CandidateStage.removeFromCandidate(candidateId);
 
-      if (deletedCandidate) {
-        res.json({ message: 'Candidate deleted successfully', deletedCandidate });
-      } else {
-        res.status(404).json({ message: 'Candidate not found' });
+      // Удаляем самого кандидата
+      const deletedCandidate = await Candidate.delete(candidateId);
+
+      if (!deletedCandidate) {
+        return res.status(404).json({ message: 'Candidate not found' });
       }
+
+      res.json({ message: 'Candidate deleted successfully', deletedCandidate });
     } catch (error) {
       console.error('Error deleting candidate:', error);
       res.status(500).json({ message: 'Error deleting candidate', error });
     }
   },
+
 };
 
 module.exports = candidateController;

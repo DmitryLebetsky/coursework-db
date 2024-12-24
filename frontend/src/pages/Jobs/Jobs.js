@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import './Jobs.css';
 
 function Jobs() {
     const [jobTypes, setJobTypes] = useState([]);
@@ -99,12 +100,12 @@ function Jobs() {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>Jobs</h1>
             {message && <p>{message}</p>}
 
             <h2>Create Job</h2>
-            <form onSubmit={handleCreateJob}>
+            <form className="job-form" onSubmit={handleCreateJob}>
                 <input
                     type="text"
                     placeholder="Title"
@@ -131,9 +132,9 @@ function Jobs() {
             </form>
 
             <h2>All Jobs</h2>
-            <ul>
+            <ul className='jobs-list'>
                 {jobs.map((job) => (
-                    <li key={job.id}>
+                    <li className='job-card' key={job.id}>
                         <h3>{job.title}</h3>
                         <p>{job.description}</p>
                         <p>Type: {job.job_type_name || 'Not specified'}</p>

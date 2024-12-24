@@ -16,7 +16,19 @@ const reportController = {
 
   async getAll(req, res) {
     try {
-      const reports = await Report.getAll();
+      const userId = req.user.userId;
+      const userRole = req.user.role;
+
+      let reports;
+
+      if (userRole === 'admin') {
+        // Администратор видит все отчёты
+        reports = await Report.getAll();
+      } else {
+        // Рекрутер видит только свои
+        reports = await Report.getByUser(userId);
+      }
+
       res.json(reports);
     } catch (error) {
       console.error('Error retrieving reports:', error);

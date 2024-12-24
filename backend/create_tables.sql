@@ -26,7 +26,7 @@ CREATE TABLE candidates (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     resume TEXT,
-    vacancy_id INTEGER REFERENCES jobs(id)
+    job_id INTEGER REFERENCES jobs(id)
 );
 
 CREATE TABLE stages (
@@ -65,7 +65,65 @@ CREATE TABLE report (
     content TEXT NOT NULL
 );
 
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id), -- Кому адресовано уведомление
+    message TEXT NOT NULL, -- Текст уведомления
+    is_read BOOLEAN DEFAULT FALSE, -- Прочитано или нет
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Время создания
+);
+
+
 SELECT * FROM candidates;
 SELECT * FROM candidate_stage;
 
 INSERT INTO stages (name, job_id) VALUES ('Prescreening', 1), ('Interview', 1), ('Offer', 1);
+
+
+CREATE OR REPLACE FUNCTION log_job_action()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO action_log (user_id, action, created_at)
+  VALUES (
+    NULL, -- Так как recruiter_id отсутствует, используем NULL
+    CASE
+      WHEN TG_OP = 'INSERT' THEN 'Created job: ' || NEW.title
+      WHEN TG_OP = 'UPDATE' THEN 'Updated job: ' || COALESCE(NEW.title, OLD.title)
+      WHEN TG_OP = 'DELETE' THEN 'Deleted job: ' || OLD.title
+      ELSE 'Unknown operation on job'
+    END,
+    CURRENT_TIMESTAMP
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trigger_log_job
+AFTER INSERT OR UPDATE OR DELETE ON jobs
+FOR EACH ROW
+EXECUTE FUNCTION log_job_action();
+
+CREATE OR REPLACE FUNCTION log_candidate_action()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO action_log (user_id, action, created_at)
+  VALUES (
+    -- Здесь предполагается, что user_id будет извлекаться из внешнего контекста или оставлено NULL
+    NULL, -- Для кандидатов user_id неизвестен, можно оставить NULL
+    CASE
+      WHEN TG_OP = 'INSERT' THEN 'Added candidate: ' || NEW.name || ' to job ID ' || NEW.job_id
+      WHEN TG_OP = 'UPDATE' THEN 'Updated candidate: ' || COALESCE(NEW.name, OLD.name)
+      WHEN TG_OP = 'DELETE' THEN 'Deleted candidate: ' || OLD.name || ' from job ID ' || OLD.job_id
+      ELSE 'Unknown operation on candidate'
+    END,
+    CURRENT_TIMESTAMP
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_log_candidate
+AFTER INSERT OR UPDATE OR DELETE ON candidates
+FOR EACH ROW
+EXECUTE FUNCTION log_candidate_action();

@@ -11,6 +11,7 @@ const jobTypeRoutes = require('./routes/jobTypeRoutes');
 const actionLogRoutes = require('./routes/actionLogRoutes');
 const candidateCommentRoutes = require('./routes/candidateCommentRoutes');
 const reportRoutes = require('./routes/reportRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 require('dotenv').config();
 
@@ -28,6 +29,7 @@ app.use('/api/job-types', jobTypeRoutes);
 app.use('/api/action-log', actionLogRoutes);
 app.use('/api/candidate-comments', candidateCommentRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

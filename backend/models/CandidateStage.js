@@ -3,10 +3,27 @@ const pool = require('../config/db');
 const CandidateStage = {
   async update(candidateId, stageId) {
     const result = await pool.query(
-      'INSERT INTO candidate_stage (candidate_id, stage_id, updated_at) VALUES ($1, $2, NOW()) RETURNING *',
+      `
+        INSERT INTO candidate_stage (candidate_id, stage_id, updated_at)
+        VALUES ($1, $2, NOW())
+        RETURNING id AS candidate_stage_id, candidate_id, stage_id, updated_at
+        `,
       [candidateId, stageId]
     );
-    return result.rows[0];
+
+    // Получаем объединённые данные кандидата
+    const candidateData = await pool.query(
+      `
+        SELECT c.id AS candidate_id, c.name, c.email, c.resume,
+               cs.stage_id, cs.id AS candidate_stage_id, cs.updated_at
+        FROM candidates c
+        JOIN candidate_stage cs ON cs.candidate_id = c.id
+        WHERE cs.id = $1
+        `,
+      [result.rows[0].candidate_stage_id]
+    );
+
+    return candidateData.rows[0];
   },
 
   async updateStage(candidateId, stageId) {
@@ -54,6 +71,21 @@ const CandidateStage = {
     `, [jobId]);
 
     return result.rows;
+  },
+
+  async getByStage(stageId) {
+    const result = await pool.query(
+      'SELECT * FROM candidate_stage WHERE stage_id = $1',
+      [stageId]
+    );
+    return result.rows;
+  },
+
+  async removeFromCandidate(candidateId) {
+    await pool.query(
+      'DELETE FROM candidate_stage WHERE candidate_id = $1',
+      [candidateId]
+    );
   },
 };
 

@@ -16,6 +16,11 @@ const User = {
     return result.rows[0];
   },
 
+  async getAll() {
+    const result = await pool.query('SELECT id, username, role FROM users');
+    return result.rows;
+  },
+
   async getByRole(role) {
     const result = await pool.query('SELECT id, username, role FROM users WHERE role = $1', [role]);
     return result.rows;

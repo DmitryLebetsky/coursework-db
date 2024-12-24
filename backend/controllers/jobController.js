@@ -1,27 +1,27 @@
 const Job = require('../models/Job');
-const ActionLog = require('../models/ActionLog'); 
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 const jobController = {
   async create(req, res) {
     const { title, description, jobTypeId } = req.body;
-    const recruiterId = req.user.userId;
-  
+
     try {
       const job = await Job.create(title, description, jobTypeId);
-  
-      // Пытаемся записать действие в лог
-      try {
-        await ActionLog.logAction(recruiterId, `Created job: ${job.title}`);
-      } catch (logError) {
-        console.error('Error logging action:', logError); // Логируем, но не прерываем процесс
+
+      const users = await User.getAll(); // Получаем всех пользователей
+
+      // Создаём уведомления для всех рекрутеров
+      for (const user of users) {
+        await Notification.create(user.id, `New job created: ${job.title}`);
       }
-  
+
       res.status(201).json({ message: 'Job created successfully', job });
     } catch (error) {
       console.error('Error creating job:', error); // Логируем ошибку
       res.status(500).json({ message: 'Error creating job', error });
     }
-  },  
+  },
 
   async getAll(req, res) {
     try {

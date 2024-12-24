@@ -8,8 +8,9 @@ import {
     addStage,
     deleteStage,
     updateCandidateStage,
-} from '../api/pipelineApi';
-import Stage from '../components/Stage';
+} from '../../api/pipelineApi';
+import Stage from '../../components/Stage';
+import './Pipeline.css';
 
 function Pipeline() {
     const { jobId } = useParams();
@@ -181,10 +182,11 @@ function Pipeline() {
                 placeholder="New Stage Name"
             />
             <button onClick={handleAddStage}>Add Stage</button>
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext className='pipeline-container' onDragEnd={handleDragEnd}>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                     {pipelineData.stages.map((stage) => (
                         <Stage
+                            className='stage'
                             key={stage.id}
                             stage={stage}
                             candidates={pipelineData.candidates}
