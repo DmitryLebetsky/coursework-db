@@ -85,7 +85,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO action_log (user_id, action, created_at)
   VALUES (
-    NULL, -- Так как recruiter_id отсутствует, используем NULL
+    NULL,
     CASE
       WHEN TG_OP = 'INSERT' THEN 'Created job: ' || NEW.title
       WHEN TG_OP = 'UPDATE' THEN 'Updated job: ' || COALESCE(NEW.title, OLD.title)
@@ -127,3 +127,26 @@ CREATE TRIGGER trigger_log_candidate
 AFTER INSERT OR UPDATE OR DELETE ON candidates
 FOR EACH ROW
 EXECUTE FUNCTION log_candidate_action();
+
+-- ИНДЕКСЫ
+CREATE INDEX idx_candidates_job_id ON candidates (job_id);
+CREATE INDEX idx_candidate_stage_candidate_id ON candidate_stage (candidate_id);
+CREATE INDEX idx_candidate_stage_stage_id ON candidate_stage (stage_id);
+CREATE INDEX idx_report_user_id ON report (user_id);
+CREATE INDEX idx_report_job_id ON report (job_id);
+CREATE INDEX idx_action_log_user_id ON action_log (user_id);
+-- ПРЕДСТАВЛЕНИЯ
+CREATE OR REPLACE VIEW job_summary AS
+SELECT
+    j.id AS job_id,
+    j.title AS job_title,
+    jt.type_name AS job_type,
+    COUNT(c.id) AS candidate_count,
+    j.status,
+    j.created_at,
+    j.closed_at
+FROM jobs j
+LEFT JOIN job_type jt ON j.job_type_id = jt.id
+LEFT JOIN candidates c ON j.id = c.job_id
+GROUP BY j.id, jt.type_name;
+

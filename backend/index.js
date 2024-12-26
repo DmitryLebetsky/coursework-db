@@ -13,6 +13,9 @@ const candidateCommentRoutes = require('./routes/candidateCommentRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger-output.json'); // Путь к сгенерированному файлу
+
 require('dotenv').config();
 
 const app = express();
@@ -31,7 +34,12 @@ app.use('/api/candidate-comments', candidateCommentRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
+}
+
+module.exports = app;
