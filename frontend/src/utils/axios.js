@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isAuthenticated } from './auth';
 
 const apiClient = axios.create({
-  baseURL: 'http://coursework-db.railway.internal/api',
+  baseURL: 'https://coursework-db-production.up.railway.app/api',
 });
 
 // Исключения для запросов, которые не требуют токена

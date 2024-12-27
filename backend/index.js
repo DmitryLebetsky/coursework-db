@@ -23,7 +23,7 @@ const app = express();
 
 // Подключаем CORS
 app.use(cors({
-  origin: 'http://humorous-generosity-production.up.railway.app', // Укажите ваш фронтенд-адрес
+  origin: 'https://humorous-generosity-production.up.railway.app', // Укажите ваш фронтенд-адрес
   credentials: true // Если используете куки или сессии
 }));
 
