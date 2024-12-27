@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); // Подключаем CORS
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -19,6 +20,13 @@ const swaggerDocument = require('./swagger-output.json'); // Путь к сге�
 require('dotenv').config();
 
 const app = express();
+
+// Подключаем CORS
+app.use(cors({
+  origin: 'http://humorous-generosity-production.up.railway.app', // Укажите ваш фронтенд-адрес
+  credentials: true // Если используете куки или сессии
+}));
+
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
