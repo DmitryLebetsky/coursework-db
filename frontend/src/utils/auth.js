@@ -1,11 +1,11 @@
-import { decode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
   if (!token) return false;
 
   try {
-    const decoded = decode(token);
+    const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000; // Текущее время в секундах
     if (decoded.exp <= currentTime) {
       localStorage.removeItem('token'); // Удаляем токен, если истек срок
