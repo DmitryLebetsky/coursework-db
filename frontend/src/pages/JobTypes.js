@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 function JobTypes() {
   const [jobTypes, setJobTypes] = useState([]);
@@ -10,7 +10,7 @@ function JobTypes() {
     const fetchJobTypes = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/job-types', {
+        const response = await apiClient.get('/job-types', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setJobTypes(response.data);
@@ -26,8 +26,8 @@ function JobTypes() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        '/api/job-types',
+      const response = await apiClient.post(
+        '/job-types',
         { typeName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -43,7 +43,7 @@ function JobTypes() {
   const handleDeleteJobType = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/job-types/${id}`, {
+      await apiClient.delete(`/job-types/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobTypes(jobTypes.filter((type) => type.id !== id));

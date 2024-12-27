@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 function Admin() {
   const [recruiters, setRecruiters] = useState([]);
@@ -12,7 +12,7 @@ function Admin() {
     const fetchRecruiters = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/auth/recruiters', {
+        const response = await apiClient.get('/auth/recruiters', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setRecruiters(response.data);
@@ -29,8 +29,8 @@ function Admin() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        '/api/auth/create',
+      const response = await apiClient.post(
+        '/auth/create',
         { username, password, role: 'recruiter' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -48,7 +48,7 @@ function Admin() {
   const handleDeleteRecruiter = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/auth/${id}`, {
+      await apiClient.delete(`/auth/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRecruiters(recruiters.filter((recruiter) => recruiter.id !== id));

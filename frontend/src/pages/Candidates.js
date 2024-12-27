@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 function Candidates() {
     const { jobId } = useParams(); // Получаем jobId из URL
@@ -14,7 +14,7 @@ function Candidates() {
         const fetchCandidates = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`/api/candidates/${jobId}`, {
+                const response = await apiClient.get(`/candidates/${jobId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCandidates(response.data);
@@ -30,8 +30,8 @@ function Candidates() {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                '/api/candidates',
+            const response = await apiClient.post(
+                '/candidates',
                 { name, email, resume, vacancyId: jobId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -49,7 +49,7 @@ function Candidates() {
     const handleDeleteCandidate = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/candidates/${id}`, {
+            await apiClient.delete(`/candidates/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCandidates(candidates.filter((candidate) => candidate.id !== id));

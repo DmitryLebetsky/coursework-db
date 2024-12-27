@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -12,7 +12,7 @@ function Reports() {
     const fetchReports = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/reports', {
+        const response = await apiClient.get('/reports', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setReports(response.data);
@@ -25,7 +25,7 @@ function Reports() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/jobs', {
+        const response = await apiClient.get('/jobs', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setJobs(response.data);
@@ -42,8 +42,8 @@ function Reports() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        '/api/reports',
+      const response = await apiClient.post(
+        '/reports',
         { jobId, content },
         { headers: { Authorization: `Bearer ${token}` } }
       );

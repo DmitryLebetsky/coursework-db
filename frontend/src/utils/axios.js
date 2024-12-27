@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isAuthenticated } from './auth';
 
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://coursework-db.railway.internal/api',
 });
 
 apiClient.interceptors.request.use(

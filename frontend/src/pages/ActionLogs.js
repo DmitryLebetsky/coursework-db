@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 const ActionLogs = () => {
     const [logs, setLogs] = useState([]);
@@ -9,7 +9,7 @@ const ActionLogs = () => {
         const fetchLogs = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('/api/action-log', {
+                const response = await apiClient.get('/action-log', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setLogs(response.data);

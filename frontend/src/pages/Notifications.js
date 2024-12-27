@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/axios';
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -7,7 +7,7 @@ function Notifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/notifications', {
+      const response = await apiClient.get('/notifications', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotifications(response.data);
@@ -18,7 +18,7 @@ function Notifications() {
 
   const markAsRead = async (id) => {
     const token = localStorage.getItem('token');
-    await axios.put(`/api/notifications/${id}/read`, {}, {
+    await apiClient.put(`/notifications/${id}/read`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setNotifications((prev) =>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../../utils/axios';
 import './Jobs.css';
 
 function Jobs() {
@@ -15,7 +15,7 @@ function Jobs() {
         const fetchJobTypes = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('/api/job-types', {
+                const response = await apiClient.get('/job-types', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setJobTypes(response.data);
@@ -27,9 +27,10 @@ function Jobs() {
         const fetchJobs = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('/api/jobs', {
+                const response = await apiClient.get('/jobs', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                console.log("RESPONSE", response.data);
                 setJobs(response.data);
             } catch (error) {
                 console.error('Error fetching jobs:', error);
@@ -44,8 +45,8 @@ function Jobs() {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                '/api/jobs',
+            const response = await apiClient.post(
+                '/jobs',
                 { title, description, jobTypeId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -63,7 +64,7 @@ function Jobs() {
     const handleDeleteJob = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/jobs/${id}`, {
+            await apiClient.delete(`/jobs/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setJobs(jobs.filter((job) => job.id !== id));
@@ -77,8 +78,8 @@ function Jobs() {
     const handleCloseJob = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(
-                `/api/jobs/${id}/status`,
+            const response = await apiClient.put(
+                `/jobs/${id}/status`,
                 { status: 'closed' },
                 {
                     headers: { Authorization: `Bearer ${token}` },
