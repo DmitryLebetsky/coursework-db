@@ -5,9 +5,13 @@ const apiClient = axios.create({
   baseURL: 'http://coursework-db.railway.internal/api',
 });
 
+// Исключения для запросов, которые не требуют токена
+const noAuthRoutes = ['/login'];
+
 apiClient.interceptors.request.use(
   (config) => {
-    if (!isAuthenticated()) {
+    // Проверяем, нужно ли аутентифицироваться для данного запроса
+    if (!noAuthRoutes.some((route) => config.url.includes(route)) && !isAuthenticated()) {
       window.location.href = '/login'; // Перенаправляем, если токен истек
       return Promise.reject(new Error('Token has expired'));
     }
